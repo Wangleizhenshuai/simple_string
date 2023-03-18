@@ -21,7 +21,7 @@ public:
     // &；使用引用传值减少内存开销 
     // a：拷贝的simpleString对象
     
-    simpleString& operator=(const simpleString & a); //- 拷贝赋值 
+    simpleString& simpleString::operator=(const simpleString & a); //- 拷贝赋值 
     //simpleString&：返回的是赋值完成的对象的引用
     //operator=：操作符= 的重载
     
@@ -59,16 +59,28 @@ simpleString::simpleString(const char* c_str = 0)//- 初始化
 inline
 simpleString::simpleString(const simpleString & a)//- 拷贝构造
 {
-    if (a) {
-        new simpleString(strlen(a) + 1);
-    }
+    m_data = new char[strlen(a.m_data) + 1];//分配内存空间
+    strcpy(m_data, a.m_data);//同上
+    
 }
 
-simpleString::simpleString& operator=(const simpleString & a){//- 拷贝赋值
+inline
+simpleString & simpleString::operator=(const simpleString & a){//- 拷贝赋值
+    //simpleString &：返回的是simpleString的引用
+    //先判断是不是自我赋值 自我赋值不仅仅是多做一遍 而是会先把自己删掉出现错误 
+    if (this == &a) {
+        return *this;
+    }
+
+    delete[] m_data;//先把自己删掉
+ 
+    m_data = new char[strlen(a.m_data) + 1];//分配内存空间s
+    strcpy(m_data, a.m_data);//同上
+    return *this; // 传出去的类型 不需要关注函数怎么接受 所以可以返回指针。
 
 } 
 
-simpleString::~simpleString()//正常函数 不需要重写 析构函数
+simpleString::~simpleString()//正常函数 不需要重写 析构函数 当使用New的时候 需要 搭配delete
 {
-    delete[] m_data;
+    delete[] m_data; // new了数组，所以需要 delete 数组  
 }
